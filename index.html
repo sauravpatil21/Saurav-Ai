@@ -47,7 +47,7 @@
 
         let websocket = null;
         const chatId = crypto.randomUUID();
-        const systemPrompt = "You are Saurav, an AI assistant that helps farmers with agricultural queries.";
+        const systemPrompt = "You are an AI assistant with vast knowledge in various domains, including science, technology, education, business, health, and general knowledge. Your goal is to provide clear, informative, and engaging responses to users' questions in a friendly and professional manner.";
 
         // Function to create chat message
         function createMessageElement(text, alignment) {
@@ -69,7 +69,7 @@
                 websocket.onopen = () => {
                     websocket.send(JSON.stringify({
                         chatId: chatId,
-                        appId: "your-app-id-here",
+                        appId: "wide-former", // अपने App ID से बदलें
                         systemPrompt: systemPrompt,
                         message: message
                     }));
