@@ -4,39 +4,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with Saurav</title>
+    <title>Chat with Saurav - AI Powered Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Tech-Related Animated Background */
+        body {
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        .tech-bg {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.2), transparent 70%);
+            z-index: -1;
+        }
+
+        .tech-bg::before,
+        .tech-bg::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            border-radius: 50%;
+            filter: blur(50px);
+            animation: orbit 10s infinite linear;
+        }
+
+        .tech-bg::before {
+            top: 10%;
+            left: 10%;
+        }
+
+        .tech-bg::after {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        @keyframes orbit {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(50px, 50px) scale(1.2);
+            }
+
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+        }
+
+        /* Fade-In Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Typing Indicator */
+        .typing-indicator span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #60a5fa;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* Custom Scrollbar */
+        #chatbox::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chatbox::-webkit-scrollbar-thumb {
+            background: linear-gradient(#3b82f6, #2563eb);
+            border-radius: 4px;
+        }
+
+        #chatbox::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        /* Chat Bubble Animation */
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .chat-bubble {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Dark Mode Adjustments */
+        .dark .bg-white {
+            background-color: #2563EB;
+        }
+
+        .dark .bg-gray-50 {
+            background-color: #334155;
+        }
+
+        .dark .bg-gray-100 {
+            background-color: #2d3748;
+        }
+
+        .dark .text-gray-600 {
+            color: #d1d5db;
+        }
+
+        .dark .border-gray-200 {
+            border-color: #4b5563;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 flex flex-col min-h-screen justify-center items-center">
+<body
+    class="flex flex-col min-h-screen justify-center items-center font-sans p-2 sm:p-4 relative transition-colors duration-300">
+    <!-- Tech Background -->
+    <div class="tech-bg"></div>
 
-    <div class="bg-white shadow-md rounded-lg overflow-hidden w-full max-w-2xl flex flex-col">
+    <!-- Chat Container -->
+    <div
+        class="bg-white dark:bg-gray-800 shadow-2xl rounded-3xl overflow-hidden w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl xl:max-w-4xl flex flex-col transition-all duration-300 hover:shadow-4xl">
         <!-- Chat Header -->
-        <div class="bg-blue-600 text-white text-center py-3 text-lg font-bold p-3">
-            💬 Chat with Saurav
+        <div
+            class="bg-gradient-to-r from-blue-700 to-indigo-700 text-white py-4 px-4 sm:px-6 flex items-center justify-between rounded-t-3xl">
+            <div class="flex items-center space-x-3">
+                <img src="images/ai.jpg" alt="AI Profile"
+                    class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-white chat-bubble">
+                <h1 class="text-lg sm:text-xl md:text-2xl font-bold">💬 Chat with Saurav</h1>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <button id="themeToggle"
+                    class="text-white hover:text-gray-200 p-2 rounded-full bg-opacity-20 bg-white transition-all duration-300">
+                    <i class="fas fa-moon text-lg sm:text-xl"></i>
+                </button>
+                <button id="minimizeButton"
+                    class="text-white hover:text-gray-200 sm:hidden p-2 rounded-full bg-opacity-20 bg-white transition-all duration-300">
+                    <i class="fas fa-minus text-lg"></i>
+                </button>
+            </div>
         </div>
 
         <!-- Chat Messages Box -->
-        <div id="chatbox" class="flex flex-col space-y-3 p-4 h-80 overflow-y-auto">
-            <div class="text-center text-gray-500">Welcome! Ask me anything.</div>
+        <div id="chatbox"
+            class="flex flex-col space-y-4 p-4 sm:p-6 h-64 sm:h-80 md:h-96 lg:h-[28rem] overflow-y-auto bg-gray-50 dark:bg-gray-700 transition-colors duration-300">
+            <div class="flex flex-col items-center text-gray-600 dark:text-gray-300 fade-in font-medium">
+                <span>Welcome to your AI Assistant!</span>
+                <span class="text-sm mt-1">Hey, I’m Saurav! Ask me anything—your doubts, ideas, or just chat—type away!</span>
+            </div>
         </div>
 
         <!-- Input Area -->
-        <div class="bg-gray-200 p-3 flex items-center space-x-2">
-            <input id="messageInput" type="text"
-                class="flex-grow p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                placeholder="Type your message...">
-
-            <button id="sendButton"
-                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-all duration-300">
-                Send
-            </button>
-
-            <button id="clearButton"
-                class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg transition-all duration-300">
-                Clear
-            </button>
+        <div
+            class="bg-gray-100 dark:bg-gray-600 p-4 flex flex-col space-y-3 sm:space-y-0 sm:flex-row items-center sm:space-x-4 border-t border-gray-300 dark:border-gray-500 transition-colors duration-300">
+            <div class="relative w-full">
+                <input id="messageInput" type="text"
+                    class="w-full p-3 pl-10 pr-10 rounded-xl border border-gray-300 dark:border-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-200"
+                    placeholder="Type your question or say it...">
+                <i class="fas fa-microphone absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 cursor-pointer transition-colors duration-200"
+                    id="voiceButton"></i>
+            </div>
+            <div class="flex space-x-3 w-full sm:w-auto">
+                <button id="sendButton"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-xl shadow-md transition-all duration-300 font-semibold w-full sm:w-auto flex items-center justify-center">
+                    <i class="fas fa-paper-plane mr-2"></i> Send
+                </button>
+                <button id="clearButton"
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 sm:px-6 py-2 rounded-xl shadow-md transition-all duration-300 font-semibold w-full sm:w-auto flex items-center justify-center">
+                    <i class="fas fa-trash mr-2"></i> Clear
+                </button>
+            </div>
         </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-4 right-4 flex flex-col space-y-3">
+        <button id="saveChatButton"
+            class="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-300"
+            title="Save Chat">
+            <i class="fas fa-save text-lg"></i>
+        </button>
+        <button id="copyLastMessageButton"
+            class="bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg transition-all duration-300"
+            title="Copy Last Message">
+            <i class="fas fa-copy text-lg"></i>
+        </button>
     </div>
 
     <script>
@@ -44,19 +239,77 @@
         const messageInput = document.getElementById("messageInput");
         const sendButton = document.getElementById("sendButton");
         const clearButton = document.getElementById("clearButton");
+        const minimizeButton = document.getElementById("minimizeButton");
+        const themeToggle = document.getElementById("themeToggle");
+        const voiceButton = document.getElementById("voiceButton");
+        const saveChatButton = document.getElementById("saveChatButton");
+        const copyLastMessageButton = document.getElementById("copyLastMessageButton");
+        const chatContainer = chatbox.parentElement;
 
         let websocket = null;
+        let typingElement = null;
+        let lastMessage = null;
         const chatId = crypto.randomUUID();
         const systemPrompt = "You are an AI assistant with vast knowledge in various domains, including science, technology, education, business, health, and general knowledge. Your goal is to provide clear, informative, and engaging responses to users' questions in a friendly and professional manner.";
 
+        // Function to get current timestamp
+        function getTimestamp() {
+            return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
         // Function to create chat message
-        function createMessageElement(text, alignment) {
+        function createMessageElement(text, sender) {
             const messageElement = document.createElement("div");
-            messageElement.className = `p-3 rounded-lg max-w-xs break-words 
-                ${alignment === "left" ? "bg-gray-200 self-start" : "bg-blue-400 text-white self-end"}`;
-            messageElement.textContent = text;
+            messageElement.className = `flex items-start space-x-3 max-w-[90%] sm:max-w-[80%] md:max-w-[75%] fade-in ${sender === "user" ? "ml-auto" : "mr-auto"}`;
+
+            const img = document.createElement("img");
+            img.src = sender === "user" ? "images/user.png" : "images/ai.jpg";
+            img.alt = `${sender} Profile`;
+            img.className = "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex-shrink-0 shadow-md";
+
+            const contentElement = document.createElement("div");
+            contentElement.className = "flex flex-col space-y-1";
+
+            const textElement = document.createElement("div");
+            textElement.className = `p-3 rounded-xl break-words shadow-md ${sender === "user" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600"}`;
+            textElement.textContent = text;
+
+            const timeElement = document.createElement("span");
+            timeElement.className = `text-xs ${sender === "user" ? "text-blue-200" : "text-gray-500 dark:text-gray-400"} mt-1`;
+            timeElement.textContent = getTimestamp();
+
+            contentElement.append(textElement, timeElement);
+
+            if (sender === "user") {
+                messageElement.append(contentElement, img);
+            } else {
+                messageElement.append(img, contentElement);
+            }
+
             chatbox.appendChild(messageElement);
             chatbox.scrollTop = chatbox.scrollHeight;
+            lastMessage = { text, sender };
+        }
+
+        // Function to create typing indicator
+        function createTypingIndicator() {
+            if (typingElement) return;
+            typingElement = document.createElement("div");
+            typingElement.className = "flex items-center space-x-2 p-3 bg-white dark:bg-gray-800 rounded-xl max-w-xs fade-in shadow-md border border-gray-200 dark:border-gray-600";
+            typingElement.innerHTML = `
+                <span class="typing-indicator"><span></span><span></span><span></span></span>
+                <span class="text-gray-600 dark:text-gray-300 font-medium">Saurav is thinking...</span>
+            `;
+            chatbox.appendChild(typingElement);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        // Function to remove typing indicator
+        function removeTypingIndicator() {
+            if (typingElement) {
+                typingElement.remove();
+                typingElement = null;
+            }
         }
 
         // Function to connect to WebSocket API
@@ -64,31 +317,64 @@
             if (websocket === null || websocket.readyState !== WebSocket.OPEN) {
                 websocket = new WebSocket("wss://backend.buildpicoapps.com/api/chatbot/chat");
 
-                let fullResponse = ""; // Store full response
-
+                let fullResponse = "";
                 websocket.onopen = () => {
+                    createTypingIndicator();
                     websocket.send(JSON.stringify({
                         chatId: chatId,
-                        appId: "wide-former", // अपने App ID से बदलें
+                        appId: "wide-former", // Replace with your App ID
                         systemPrompt: systemPrompt,
                         message: message
                     }));
                 };
 
                 websocket.onmessage = (event) => {
-                    fullResponse += event.data; // Append incoming data
+                    fullResponse += event.data;
                 };
 
                 websocket.onclose = () => {
-                    createMessageElement(fullResponse, "left");  // Show full response at once
+                    removeTypingIndicator();
+                    createMessageElement(fullResponse, "ai");
                     websocket = null;
                 };
 
                 websocket.onerror = (error) => {
-                    createMessageElement("Error connecting to AI server.", "left");
+                    removeTypingIndicator();
+                    createMessageElement("Error connecting to AI server.", "ai");
                     console.error("WebSocket Error:", error);
                 };
             }
+        }
+
+        // Voice Input Functionality
+        if ("webkitSpeechRecognition" in window) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = "en-US";
+
+            voiceButton.addEventListener("click", () => {
+                recognition.start();
+                voiceButton.classList.add("text-blue-500");
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                messageInput.value = transcript;
+                voiceButton.classList.remove("text-blue-500");
+                sendButton.click();
+            };
+
+            recognition.onerror = () => {
+                voiceButton.classList.remove("text-blue-500");
+                createMessageElement("Sorry, I couldn't understand your voice input.", "ai");
+            };
+
+            recognition.onend = () => {
+                voiceButton.classList.remove("text-blue-500");
+            };
+        } else {
+            voiceButton.style.display = "none";
         }
 
         // Event Listeners
@@ -96,7 +382,7 @@
             if (messageInput.value.trim() !== "") {
                 const messageText = messageInput.value.trim();
                 messageInput.value = "";
-                createMessageElement(messageText, "right");  // User message right side
+                createMessageElement(messageText, "user");
                 connectWebSocket(messageText);
             }
         });
@@ -109,10 +395,74 @@
         });
 
         clearButton.addEventListener("click", () => {
-            chatbox.innerHTML = '<div class="text-center text-gray-500">Welcome! Ask me anything.</div>';
+            chatbox.innerHTML = `
+                <div class="flex flex-col items-center text-gray-600 dark:text-gray-300 fade-in font-medium">
+                    <span>Welcome to your AI Assistant!</span>
+                    <span class="text-sm mt-1">Ask me anything or use the voice button below.</span>
+                </div>
+            `;
+            if (websocket) websocket.close();
+            removeTypingIndicator();
+            lastMessage = null;
+        });
+
+        minimizeButton.addEventListener("click", () => {
+            chatbox.classList.toggle("hidden");
+            messageInput.parentElement.parentElement.classList.toggle("hidden");
+            chatContainer.classList.toggle("rounded-b-3xl");
+            minimizeButton.querySelector("i").classList.toggle("fa-minus");
+            minimizeButton.querySelector("i").classList.toggle("fa-plus");
+        });
+
+        // Theme Toggle
+        themeToggle.addEventListener("click", () => {
+            document.body.classList.toggle("dark");
+            const isDark = document.body.classList.contains("dark");
+            themeToggle.querySelector("i").classList.toggle("fa-moon", !isDark);
+            themeToggle.querySelector("i").classList.toggle("fa-sun", isDark);
+            localStorage.setItem("theme", isDark ? "dark" : "light");
+        });
+
+        // Load saved theme
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark");
+            themeToggle.querySelector("i").classList.replace("fa-moon", "fa-sun");
+        }
+
+        // Save Chat
+        saveChatButton.addEventListener("click", () => {
+            const messages = Array.from(chatbox.children).map(child => {
+                const text = child.querySelector(".rounded-xl")?.textContent || "";
+                const time = child.querySelector(".text-xs")?.textContent || "";
+                const sender = child.classList.contains("ml-auto") ? "You" : "Saurav";
+                return `${sender} (${time}): ${text}`;
+            }).join("\n");
+            const blob = new Blob([messages], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Chat_with_Saurav_${new Date().toISOString().split("T")[0]}.txt`;
+            link.click();
+        });
+
+        // Copy Last Message
+        copyLastMessageButton.addEventListener("click", () => {
+            if (lastMessage) {
+                navigator.clipboard.writeText(lastMessage.text).then(() => {
+                    const toast = document.createElement("div");
+                    toast.textContent = "Message copied to clipboard!";
+                    toast.className = "fixed bottom-20 right-4 bg-green-500 text-white px-4 py-2 rounded-lg fade-in shadow-lg";
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 2000);
+                });
+            } else {
+                const toast = document.createElement("div");
+                toast.textContent = "No message to copy!";
+                toast.className = "fixed bottom-20 right-4 bg-red-500 text-white px-4 py-2 rounded-lg fade-in shadow-lg";
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2000);
+            }
         });
     </script>
-
 </body>
 
 </html>
